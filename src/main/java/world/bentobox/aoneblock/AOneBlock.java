@@ -2,6 +2,7 @@ package world.bentobox.aoneblock;
 
 import java.io.IOException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
@@ -19,6 +20,7 @@ import world.bentobox.aoneblock.listeners.BlockListener;
 import world.bentobox.aoneblock.listeners.BlockProtect;
 import world.bentobox.aoneblock.listeners.NoBlockHandler;
 import world.bentobox.aoneblock.oneblocks.OneBlocksManager;
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.addons.GameModeAddon;
 import world.bentobox.bentobox.api.configuration.Config;
 import world.bentobox.bentobox.api.configuration.WorldSettings;
@@ -82,6 +84,9 @@ public class AOneBlock extends GameModeAddon {
             getPlugin().getPlaceholdersManager().registerPlaceholder(this,"my_island_count", this::getCountByOwner);
             getPlugin().getPlaceholdersManager().registerPlaceholder(this,"visited_island_next_phase", this::getNextPhaseByLocation);
             getPlugin().getPlaceholdersManager().registerPlaceholder(this,"my_island_next_phase", this::getNextPhaseByOwner);
+
+            long autoSaveTicks = BentoBox.getInstance().getSettings().getDatabaseBackupPeriod() * 20 * 60L;
+            Bukkit.getScheduler().runTaskTimer(BentoBox.getInstance(), () -> listener.saveCacheAsync(), autoSaveTicks, autoSaveTicks);
         } catch (IOException | InvalidConfigurationException e) {
             // Disable
             logError("AOneBlock settings could not load (oneblock.yml error)! Addon disabled.");

@@ -51,6 +51,7 @@ import world.bentobox.aoneblock.oneblocks.MobAspects;
 import world.bentobox.aoneblock.oneblocks.OneBlockObject;
 import world.bentobox.aoneblock.oneblocks.OneBlockPhase;
 import world.bentobox.aoneblock.oneblocks.OneBlocksManager;
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.events.island.IslandEvent.IslandCreatedEvent;
 import world.bentobox.bentobox.api.events.island.IslandEvent.IslandDeleteEvent;
 import world.bentobox.bentobox.api.events.island.IslandEvent.IslandResettedEvent;
@@ -156,6 +157,12 @@ public class BlockListener implements Listener {
      * Save the island cache
      */
     public void saveCache() {
+        cache.values().forEach(handler::saveObject); // async save on disable leads to race conditions
+        BentoBox.getInstance().log("Saved OneBlock island cache!");
+    }
+
+    public void saveCacheAsync() {
+        BentoBox.getInstance().log("Async saving OneBlock island cache...");
         cache.values().forEach(handler::saveObjectAsync);
     }
 
