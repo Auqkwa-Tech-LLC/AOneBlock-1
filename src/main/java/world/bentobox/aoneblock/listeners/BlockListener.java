@@ -181,6 +181,9 @@ public class BlockListener implements Listener {
         }
     }
 
+    // Cached worlds for saving
+    private World oneblockWorld = null, oneblockWorldNether = null;
+
     private void setUp(Island island) {
         // Set the bedrock to the initial block
         Util.getChunkAtAsync(island.getCenter()).thenRun(() -> island.getCenter().getBlock().setType(Material.GRASS_BLOCK));
@@ -188,6 +191,15 @@ public class BlockListener implements Listener {
         OneBlockIslands is = new OneBlockIslands(island.getUniqueId());
         cache.put(island.getUniqueId(), is);
         handler.saveObjectAsync(is);
+        // Save worlds to disk (Important!)'
+        if (oneblockWorld == null)
+            oneblockWorld = Bukkit.getWorld("oneblock_world");
+        if (oneblockWorldNether == null)
+            oneblockWorldNether = Bukkit.getWorld("oneblock_world_nether");
+        if (oneblockWorld != null)
+            oneblockWorld.save();
+        if (oneblockWorldNether != null)
+            oneblockWorldNether.save();
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -317,6 +329,8 @@ public class BlockListener implements Listener {
         }
         // Increment the block number
         is.incrementBlockNumber();
+        // Save island
+        handler.saveObjectAsync(is);
     }
 
     private void spawnBlock(OneBlockObject nextBlock, Block block) {
